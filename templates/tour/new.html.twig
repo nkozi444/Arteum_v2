@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Tour{% endblock %}
+
+{% block body %}
+  <div class="min-h-screen text-white pt-20 pb-20" style="background-color:#333333;">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      {# Flash messages #}
+      {% for label, messages in app.flashes %}
+        {% for message in messages %}
+          <div class="mb-6 rounded-lg px-4 py-3 {{ label == 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endfor %}
+
+      <div class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-white mb-2 pb-4 border-b-2 border-indigo-500 w-full">
+          Create New Tour
+        </h1>
+        <p class="text-neutral-400 mt-2">Please fill out the details below to schedule a new tour.</p>
+      </div>
+
+      <div class="p-8 md:p-10 rounded-xl shadow-2xl" style="background-color:#232323; border: 1px solid #333333;">
+        {# render the dark-themed form partial #}
+        {{ include('tour/_form.html.twig') }}
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        <a href="{{ path('app_tour_index') }}" class="text-gray-400 hover:text-gray-300 font-semibold transition duration-150 border border-indigo-400 py-2 px-5 rounded-lg hover:bg-indigo-900/20">
+          ← Back to List
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

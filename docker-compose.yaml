@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: arteum_app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "mysql://arteum_user:arteum_pass@database:3306/arteum?serverVersion=8.0&host=database"
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:80"
+    depends_on:
+      - database
+
+  database:
+    image: mysql:8.0
+    container_name: arteum_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arteum
+      MYSQL_USER: arteum_user
+      MYSQL_PASSWORD: arteum_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: arteum_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
+
+volumes:
+  db_data: {}

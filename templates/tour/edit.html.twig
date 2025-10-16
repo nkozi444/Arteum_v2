@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Tour{% endblock %}
+
+{% block body %}
+    {# Outer container with dark background, adding a substantial top and bottom padding/margin (pt-20 pb-20) #}
+    <div class="min-h-screen text-white pt-20 pb-20" style="background-color:#333333;">
+        
+        {# Inner container to limit width, center content, and add horizontal padding (px-4) #}
+        <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8"> 
+
+            {# Page Header - Centered #}
+            <div class="text-center mb-10">
+                {# Making the border full-width for a more dominant header look. Replaced gray-500 with indigo-500 for consistency/pop. #}
+                <h1 class="text-4xl font-extrabold text-white mb-2 pb-4 border-b-2 border-indigo-500 w-full">
+                    Edit Tour
+                </h1>
+                <p class="text-neutral-400 mt-2">Modify the details for the scheduled tour.</p>
+            </div>
+
+            {# --- Form Container Enhancement --- #}
+            {# Added background, padding, shadow, and a subtle border to make the form a visual panel #}
+            <div class="p-8 md:p-10 rounded-xl shadow-2xl" style="background-color:#232323; border: 1px solid #333333;">
+
+                {# Include the styled form, passing 'Update' as the button label #}
+                {{ include('tour/_form.html.twig', {'button_label': 'Update'}) }}
+
+            </div>
+            {# ---------------------------------- #}
+
+            {# Action Buttons - Grouped and styled #}
+            {# Changed justify-between to justify-center and used flex-row space to group them neatly #}
+            <div class="mt-8 flex flex-row justify-center space-x-6">
+                
+                {# Back to list button - Styled as a secondary link with hover effect #}
+                <a href="{{ path('app_tour_index') }}" class="text-indigo-400 hover:text-indigo-300 font-semibold transition duration-150 border border-indigo-400 py-2 px-5 rounded-lg hover:bg-indigo-900/20">
+                    ← Back to List
+                </a>
+                
+                {# Include the delete form. We'll wrap it to ensure it aligns nicely with the other button. #}
+                {# NOTE: The styling of the Delete button itself depends on tour/delete.html.twig. We assume it's styled as a button (e.g., bg-red-600) #}
+                <div>
+                    {{ include('tour/delete.html.twig') }}
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

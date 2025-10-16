@@ -1,0 +1,151 @@
+{# templates/user/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Your dashboard — ARTEUM{% endblock %}
+
+{% block body %}
+{# full-screen background layer #}
+<div style="position:fixed; inset:0; background: linear-gradient(180deg,#333333 0%, #222222 100%); z-index:0;"></div>
+
+<div class="relative z-10 min-h-screen text-white py-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-6xl mx-auto">
+
+    {# Header / Greeting #}
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Welcome back</h1>
+        <p class="mt-1 text-sm text-neutral-400">
+          Hi{% if app.user and app.user.email is defined %} — {{ app.user.email }}{% endif %}. Here's your dashboard.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        {# Book tour button #}
+        <a href="{{ path('app_book_a_tour') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-2 px-4 rounded-lg shadow">
+          Book a tour
+        </a>
+
+        {# My tours / index #}
+        <a href="{{ path('app_tour_index') }}" class="inline-flex items-center gap-2 border border-neutral-700 text-neutral-100 py-2 px-4 rounded-lg hover:bg-neutral-800">
+          My tours
+        </a>
+
+        {# Logout: use POST to trigger Symfony logout safely #}
+        <form action="{{ path('app_logout') }}" method="post" class="inline">
+          {# Optional CSRF token (won't hurt if logout firewall expects none) #}
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+          <button type="submit" class="inline-flex items-center gap-2 bg-transparent border border-neutral-700 text-neutral-100 py-2 px-3 rounded-lg hover:bg-neutral-800">
+            Logout
+          </button>
+        </form>
+      </div>
+    </header>
+
+    {# User info card #}
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div class="lg:col-span-1 rounded-2xl bg-[#232323] border border-neutral-800 p-6 shadow">
+        <h2 class="text-sm font-semibold text-neutral-300 mb-3">Your account</h2>
+
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0">
+            <div class="h-12 w-12 rounded-full bg-neutral-700 flex items-center justify-center text-xl font-bold text-neutral-100">
+              {{ app.user.email|default('U')[:1]|upper }}
+            </div>
+          </div>
+
+          <div class="flex-1">
+            <div class="text-sm text-neutral-300 font-medium">{{ app.user.email|default('—') }}</div>
+            <div class="mt-2 flex flex-wrap gap-2">
+              {# show role badges (supports both getRoles() or roles property) #}
+              {% set roles = app.user is defined and app.user.getRoles is defined ? app.user.getRoles() : (app.user.roles|default([])) %}
+              {% for role in roles %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium
+                  {% if role == 'ROLE_ADMIN' %} bg-amber-500 text-black {% else %} bg-neutral-700 text-neutral-200 {% endif %}">
+                  {{ role|replace({'ROLE_':''}) }}
+                </span>
+              {% endfor %}
+            </div>
+
+            <div class="mt-4 text-sm text-neutral-400">
+              Member since:
+              {% if app.user and app.user.getCreatedAt is defined and app.user.getCreatedAt() %}
+                {{ app.user.getCreatedAt()|date('Y-m-d') }}
+              {% else %}
+                N/A
+              {% endif %}
+            </div>
+
+            <div class="mt-4">
+              <a href="#" class="text-sm text-indigo-400 hover:text-indigo-300">Edit profile</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Quick stats / placeholders #}
+      <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="rounded-2xl bg-[#232323] border border-neutral-800 p-4 shadow flex flex-col">
+          <div class="text-sm text-neutral-400">Upcoming Tours</div>
+          <div class="mt-4 text-2xl font-bold">—</div>
+          <div class="mt-2 text-xs text-neutral-400">You have no upcoming tours</div>
+        </div>
+
+        <div class="rounded-2xl bg-[#232323] border border-neutral-800 p-4 shadow flex flex-col">
+          <div class="text-sm text-neutral-400">Past Tours</div>
+          <div class="mt-4 text-2xl font-bold">—</div>
+          <div class="mt-2 text-xs text-neutral-400">History of visits</div>
+        </div>
+
+        <div class="rounded-2xl bg-[#232323] border border-neutral-800 p-4 shadow flex flex-col">
+          <div class="text-sm text-neutral-400">Quick actions</div>
+          <div class="mt-4 flex flex-col gap-2">
+            <a href="{{ path('app_tour_new') }}" class="text-sm inline-block text-indigo-400 hover:text-indigo-300">Create a new tour</a>
+            <a href="{{ path('app_book_a_tour') }}" class="text-sm inline-block text-indigo-400 hover:text-indigo-300">Request a booking</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# Optional: render user's tours if controller passes `tours` #}
+    <section class="rounded-2xl bg-[#232323] border border-neutral-800 p-6 shadow">
+      <h3 class="text-lg font-semibold text-neutral-100 mb-3">My Tours</h3>
+
+      {% if tours is defined and tours is not empty %}
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-sm">
+            <thead class="text-neutral-400 text-xs uppercase">
+              <tr>
+                <th class="px-4 py-2 text-left">#</th>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="px-4 py-2 text-left">Date</th>
+                <th class="px-4 py-2 text-left">Status</th>
+                <th class="px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tour in tours %}
+                <tr class="border-t border-neutral-800 hover:bg-neutral-800/50 transition-colors">
+                  <td class="px-4 py-3">{{ tour.id }}</td>
+                  <td class="px-4 py-3">{{ tour.name }}</td>
+                  <td class="px-4 py-3">{{ tour.date ? tour.date|date('Y-m-d H:i') : '—' }}</td>
+                  <td class="px-4 py-3">{{ tour.status|default('—') }}</td>
+                  <td class="px-4 py-3">
+                    <a href="{{ path('app_tour_show', {id: tour.id}) }}" class="text-indigo-400 hover:text-indigo-300">View</a>
+                    <span class="mx-2 text-neutral-600">|</span>
+                    <a href="{{ path('app_tour_edit', {id: tour.id}) }}" class="text-amber-400 hover:text-amber-300">Edit</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="py-6 text-center text-neutral-400">
+          No tours yet — <a href="{{ path('app_tour_new') }}" class="text-indigo-400 hover:text-indigo-300">create one</a>.
+        </div>
+      {% endif %}
+    </section>
+
+  </div>
+</div>
+{% endblock %}
